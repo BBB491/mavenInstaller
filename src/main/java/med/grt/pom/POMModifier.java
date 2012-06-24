@@ -4,13 +4,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
 
@@ -40,6 +41,7 @@ public class POMModifier {
 	private List<Element> modulesElement;
 
 	/**
+	 * 
 	 * 生成用于mvn install的POM
 	 * @throws Exception
 	 */
@@ -47,17 +49,37 @@ public class POMModifier {
 		this.init();	
 		
 		// 取得改动过的文件
-		String changeFiles = this.getChangeFileNames();
+		List<String> changedModules = this.getChangedModules();
+		//info(changedModules.toString());
 		// 从Alineo/Alineo目录中的POM中取出原本要build的项目
-		List<String> originBuildModules = this.getOriginBuildModules();
-		
+		String canidateModulesPattern = this.getCanidateModulesPattern();
+		//info(canidateModulesPattern);
 		// 从改动过的文件中筛选出要重新build的项目
-		String modulesThatNeedToBuild = this.filterOutModulesThatNeedToBeReinstall(changeFiles,originBuildModules);
+		List<String> modulesThatNeedToBuild = this.filterOutModulesThatNeedToBeReinstall(changedModules,canidateModulesPattern);
+		//info(modulesThatNeedToBuild.toString());
 		
 		// 在Alineo/Alineo目录下生成一个新的POM文件
 		this.rebuildPOM(modulesThatNeedToBuild);
 	}
+
+	private void info(String info) {
+		System.out.println(info);
+	}
 	
+	private List<String> getChangedModules() throws Exception {
+		String changeFiles = this.getChangeFileNames();
+		List<String> changedModules = new ArrayList<String>();
+		if(!"".equals(changeFiles)) {
+			String[] changeFilesArray = changeFiles.split(";");
+			String changeModuleName;
+			for (String changeFile : changeFilesArray) {
+				changeModuleName = changeFile.substring(changeFile.indexOf("Alineo/"), changeFile.indexOf("/src")+1);
+				if(!changedModules.contains(changeModuleName)) changedModules.add(changeModuleName);
+			}		
+		}
+		return changedModules;
+	}
+
 	/**
 	 * 程序初始化
 	 * @throws Exception
@@ -72,6 +94,9 @@ public class POMModifier {
 		String pomPath = project_home + "/Alineo/Alineo/pom.xml";
 		SAXBuilder builder = new SAXBuilder();
 		doc = builder.build(pomPath);
+		Element project = doc.getRootElement();
+		
+		modulesElement = getModulesElement(project);
 	}
 
 	/**
@@ -79,20 +104,31 @@ public class POMModifier {
 	 * @param modulesThatNeedToBuild
 	 * @throws Exception
 	 */
-	public  void rebuildPOM(String modulesThatNeedToBuild) throws Exception {
+	public  void rebuildPOM(List<String> modulesThatNeedToBuild) throws Exception {
 		
+		modulesElement.clear();
+		Element module;
+		for (String moduleName : modulesThatNeedToBuild) {
+			module = new Element("module");
+			module.setText(moduleName);
+			modulesElement.add(module);
+		}
 		
-		for (Iterator iterator = modulesElement.iterator(); iterator.hasNext();) {
-			Element moduleElement = (Element) iterator.next();
-			String moduleName = moduleElement.getText();
-			// alineo和ServiceImpl项目不需要build
-			if(moduleName.equals("alineo") || moduleName.equals("../ServiceImpl") || !modulesThatNeedToBuild.contains(moduleName+";")) {
-				iterator.remove();
+		List<Element> elements = doc.getRootElement().getChildren();
+		for (Element parent : elements) {
+			if(parent.getName().equals("parent")) {
+				List<Element> parentChildren = parent.getChildren();
+				for (Element c : parentChildren) {
+					if(c.getName().equals("relativePath")) {
+						c.setText(c.getText().replace("../", "Alineo/"));
+					}
+				}
+				
 			}
 		}
-				
+		
 		// 创建一份新的POM文件
-		String newPomPath = project_home + "/Alineo/Alineo/pom_for_install.xml";
+		String newPomPath = project_home + "/pom_for_install.xml";
 		XMLOutputter outputter=new XMLOutputter();
 		outputter.output(doc,new FileOutputStream(newPomPath));
 		
@@ -104,37 +140,46 @@ public class POMModifier {
 	 * @param originBuildModules
 	 * @return
 	 */
-	public  String filterOutModulesThatNeedToBeReinstall(
-			String changeFiles, List<String> originBuildModules) {
-		String modulesThatNeedToBuild = "";
+	public  List<String> filterOutModulesThatNeedToBeReinstall(List<String> changedModules,
+			String canidateModulesPattern) {
 		
-		for (String module : originBuildModules) {
-			if(changeFiles.contains(module.replace("../", "") + "/")) {
-				modulesThatNeedToBuild += module + ";";
+		List<String> modulesThatNeedToBuild = new ArrayList<String>();
+		
+		for (String changedModule : changedModules) {
+			if(Pattern.matches(canidateModulesPattern, changedModule)) {
+				modulesThatNeedToBuild.add(changedModule);
 			}
 		}
+		
 		return modulesThatNeedToBuild;
+	}
+
+	private boolean isSkiped(String module) {
+		return module.equals("alineo") || module.equals("../ServiceImpl");
 	}
 
 	/**
 	 * 从Alineo/Alineo目录中的POM中取出原本要build的项目
 	 * @return
-	 * @throws JDOMException
-	 * @throws IOException
+	 * @throws Exception
 	 */
-	@SuppressWarnings("unused")
-	public  List<String> getOriginBuildModules() throws Exception {
+	public  String getCanidateModulesPattern() throws Exception {
 		
-		Element project = doc.getRootElement();
-		
-		modulesElement = getModulesElement(project);
-		List<String> originBuildModulesList = new ArrayList<String>();
-		
+		String canidateModules = "";
+		String moduleName;
 		for (Element moduleElement : modulesElement) {
-			originBuildModulesList.add(moduleElement.getText());				
+			if(!isSkiped(moduleElement.getText())) {
+				// 补全module路径
+				if(moduleElement.getText().startsWith("../")) {
+					moduleName = moduleElement.getText().replace("../", "Alineo/");
+				} else {
+					moduleName = "Alineo/Alineo/" + moduleElement.getText() ;
+				}
+				canidateModules += moduleName.replace("-", "\\-") + "/.*" + "|";
+			}					
 		}	
 		
-		return originBuildModulesList;
+		return canidateModules;
 	}
 
 	/**

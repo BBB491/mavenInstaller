@@ -1,0 +1,2 @@
+#!/bin/sh
+mvn clean install -s maven_settings.xml
