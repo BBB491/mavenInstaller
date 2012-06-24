@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
@@ -114,6 +112,7 @@ public class POMModifier {
 			modulesElement.add(module);
 		}
 		
+		// 设置project/parent/relativePath
 		List<Element> elements = doc.getRootElement().getChildren();
 		for (Element parent : elements) {
 			if(parent.getName().equals("parent")) {
