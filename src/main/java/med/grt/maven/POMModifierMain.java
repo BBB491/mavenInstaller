@@ -1,4 +1,5 @@
-package med.grt.pom;
+package med.grt.maven;
+
 
 
 /**
@@ -14,9 +15,13 @@ public class POMModifierMain {
 	 */
 	public static void main(String[] args) {
 		try {
+//			
+//			POMModifier pomModifier = new POMModifier();
+//			pomModifier.createInstallPOM();
+//			// 执行maven install命令
+//			
+//			// 记录当前完成时间
 			
-			POMModifier pomModifier = new POMModifier();
-			pomModifier.createInstallPOM();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
