@@ -17,7 +17,6 @@ public class Globals {
 	private static Properties properties = new Properties();
 	private static String propertiesPath = "modifier.properties";
 	
-	
 	public static void loadProperties() throws Exception {
 		InputStream inputStream = getCustomModifierPropertiesLocation();
 		properties.load(inputStream);
@@ -32,14 +31,14 @@ public class Globals {
 	}
 	
 	public static InputStream getCustomModifierPropertiesLocation() throws FileNotFoundException {
-		String propertyPath = Utils.getCurrentJarDirectory() + "/modifier.properties";
+		String propertyPath = Utils.getCurrentJarDirectory() + propertiesPath;
 		System.out.println(propertyPath);
 		File f = new File(propertyPath);
 		FileInputStream fileInputStream = null;
 		if(f.exists()) {
 			fileInputStream = new FileInputStream(f);
 		} else {
-			throw new FileNotFoundException("modifier.properties not found,please be sure this file is placed in the jar directory");
+			throw new FileNotFoundException(propertyPath + " not found,please be sure this file is placed in the directory " + Utils.getCurrentJarDirectory());
 		}
 		
 		return fileInputStream;
