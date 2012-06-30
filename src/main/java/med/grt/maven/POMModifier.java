@@ -20,7 +20,7 @@ public class POMModifier {
 	 * 项目目录
 	 */
 	private String project_home;
-	
+	private String originPOMFullPath;
 	private Document doc;
 	private List<Element> modulesElement;
 	private String lastFinishDateTimeString;
@@ -41,7 +41,7 @@ public class POMModifier {
 		String pom;	
 		// 如果上次构建时间为空，说明是第一次使用本组件，则要完整的build一次
 		if(Utils.isEmpty(this.lastFinishDateTimeString)) {
-			pom = this.rebuildPOM(null,true);
+			pom = originPOMFullPath;
 		} else {
 			// 取得改动过的文件
 			List<String> changedModules = ChangedModuleDetector.getDetector().getChangedModules(this.lastFinishDateTimeString);
@@ -75,9 +75,9 @@ public class POMModifier {
 		project_home = Globals.getProjectHome();
 		
 		//　初始化jdom
-		String pomPath = project_home + "/Alineo/Alineo/pom.xml";
+		originPOMFullPath = project_home + Globals.getProperty("project.originPOM");
 		SAXBuilder builder = new SAXBuilder();
-		doc = builder.build(pomPath);
+		doc = builder.build(originPOMFullPath);
 		Element project = doc.getRootElement();
 		
 		modulesElement = getModulesElement(project);

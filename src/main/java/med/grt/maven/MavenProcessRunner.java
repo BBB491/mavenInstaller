@@ -17,19 +17,20 @@ import med.grt.Utils;
 /**
  * maven的命令运行器
  * @author bmiao
- *
  */
 public class MavenProcessRunner {
 
 	private static File buildDateStoreFile;
 	
 	static {
-		buildDateStoreFile = new File(Utils.getCurrentJarDirectory() + "/.buildDateStoreFile");
+		buildDateStoreFile = new File(Globals.getProjectHome() + "/.buildDateStoreFile");
 	}
+
+	private boolean buildSuccessed;
 	
 	/**
 	 * 取得上一次构建完成时间
-	 * @return
+	 * @return	
 	 * @throws Exception 
 	 */
 	public String getLastFinishDateTimeString() throws Exception {
@@ -56,32 +57,40 @@ public class MavenProcessRunner {
 		
 		ProcessBuilder processBuilder = new ProcessBuilder();
 		processBuilder.directory(new File(Globals.getProjectHome()));
-		System.out.println(processBuilder.directory().toString());
-				
+		System.out.println(processBuilder.directory().toString());	
 		List<String> command = new ArrayList<String>();
-		command.add("mvn");
+		command.add("mvn" + (Globals.isWindows()?".bat":""));
 		command.add("clean");
 		command.add("install");
 		
 		if(!Utils.isEmpty(mavenSettings)) {
 			command.add("-s");
 			command.add(mavenSettings);
-		} 
+		}
+		command.add("-Dmaven.test.skip=true");
 		command.add("-f");
 		command.add(pom);
 		processBuilder.command(command);
 		
 		printProcess(processBuilder.start());
         
-		this.setFinishDateTime();
+		if(buildSuccessed) {
+			this.setFinishDateTime();
+		}
+		
 	}
 
 	private void printProcess(Process process) throws IOException {
 		BufferedReader results=new BufferedReader(new InputStreamReader(process.getInputStream()));  
         String s;  
         boolean err=false;
-        while((s=results.readLine())!=null)  
-            System.out.println(s);  
+        while((s=results.readLine())!=null) {
+        	if(s.endsWith("BUILD SUCCESS")) {
+        		buildSuccessed = true;
+        	}
+        	System.out.println(s);
+        }
+              
         BufferedReader errors=new BufferedReader(new InputStreamReader(process.getErrorStream()));  
         while((s=errors.readLine())!=null){  
             System.err.println(s);  

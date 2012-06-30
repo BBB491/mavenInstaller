@@ -17,16 +17,10 @@ public class Globals {
 	private static Properties properties = new Properties();
 	private static String propertiesPath = "modifier.properties";
 	
-	static {
-		try {
-			InputStream inputStream = getCustomModifierPropertiesLocation();
-			if(inputStream == null) {
-				inputStream = ClassLoader.getSystemResourceAsStream(propertiesPath);
-			}
-			properties.load(inputStream);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	
+	public static void loadProperties() throws Exception {
+		InputStream inputStream = getCustomModifierPropertiesLocation();
+		properties.load(inputStream);
 	}
 
 	public static String getProjectHome() {
@@ -38,11 +32,14 @@ public class Globals {
 	}
 	
 	public static InputStream getCustomModifierPropertiesLocation() throws FileNotFoundException {
-		String propertyPath = Utils.getCurrentJarDirectory() + "modifier.properties";
+		String propertyPath = Utils.getCurrentJarDirectory() + "/modifier.properties";
+		System.out.println(propertyPath);
 		File f = new File(propertyPath);
 		FileInputStream fileInputStream = null;
 		if(f.exists()) {
 			fileInputStream = new FileInputStream(f);
+		} else {
+			throw new FileNotFoundException("modifier.properties not found,please be sure this file is placed in the jar directory");
 		}
 		
 		return fileInputStream;
@@ -50,5 +47,9 @@ public class Globals {
 
 	public static String getMavenSettings() {
 		return getProperty("project.mavenSettings");
+	}
+	
+	public static boolean isWindows() {
+		return System.getProperty("os.name").contains("Windows");
 	}
 }
