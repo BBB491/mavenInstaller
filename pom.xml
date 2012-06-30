@@ -3,11 +3,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>med.grt</groupId>
-	<artifactId>pommodifier</artifactId>
+	<artifactId>mavenInstaller</artifactId>
 	<packaging>jar</packaging>
 	<version>0.3-SNAPSHOT</version>
-	<name>pommodifier</name>
-	<description>Alineo POM Modifier</description>
+	<name>mavenInstaller</name>
+	<description>Detect SCM changed and build only changed modules</description>
 
 	<organization>
 		<name>GRT</name>
@@ -51,7 +51,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>med.grt.AlineoMavenInstaller</mainClass>
+							<mainClass>med.grt.MavenInstaller</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
