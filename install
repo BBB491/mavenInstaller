@@ -1,2 +1,3 @@
 #!/bin/sh
-mvn clean install -s maven_settings.xml
+mvn clean install -Dmaven.test.skip=true
+echo "Enter to exit";read line;

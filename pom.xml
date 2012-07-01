@@ -5,7 +5,7 @@
 	<groupId>med.grt</groupId>
 	<artifactId>mavenInstaller</artifactId>
 	<packaging>jar</packaging>
-	<version>0.3-SNAPSHOT</version>
+	<version>0.3.1</version>
 	<name>mavenInstaller</name>
 	<description>Detect SCM changed and build only changed modules</description>
 
@@ -74,11 +74,7 @@
 			<artifactId>jdom</artifactId>
 			<version>2.0.2</version>
 		</dependency>
-		<dependency>
-			<groupId>edu.nyu.cs</groupId>
-			<artifactId>javagit</artifactId>
-			<version>0.1.0</version>
-		</dependency>
+	
 		<dependency>
 			<groupId>org.tmatesoft.svnkit</groupId>
 			<artifactId>svnkit</artifactId>

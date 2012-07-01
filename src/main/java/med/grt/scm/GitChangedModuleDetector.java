@@ -20,13 +20,7 @@ public class GitChangedModuleDetector extends ChangedModuleDetector {
 	/**
 	 * git repository路径
 	 */
-	private String git_repository = Globals.getProjectHome();
-	
-	/**
-	 * baseline提交人：程序会以此提交人找到最新的那次baseline提交记录
-	 */	
-	private String git_baseline_committer = Globals.getProperty("git.baseline.committer");
-	
+	private String git_repository = Globals.getProjectHome();	
 	
 	/**
 	 * 取得自最新一次baseline以来改动过的文件

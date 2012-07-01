@@ -15,7 +15,7 @@ import java.util.Properties;
 public class Globals {
 	
 	private static Properties properties = new Properties();
-	private static String propertiesPath = "modifier.properties";
+	private static String propertiesPath = "/modifier.properties";
 	
 	public static void loadProperties() throws Exception {
 		InputStream inputStream = getCustomModifierPropertiesLocation();
@@ -23,7 +23,11 @@ public class Globals {
 	}
 
 	public static String getProjectHome() {
-		return getProperty("project.home");
+		String projectHome = getProperty("project.home");
+		if(!projectHome.endsWith("/")) {
+			projectHome += "/";
+		}
+		return projectHome;
 	}
 	
 	public static String getProperty(String key) {
