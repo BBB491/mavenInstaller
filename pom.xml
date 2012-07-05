@@ -5,7 +5,7 @@
 	<groupId>med.grt</groupId>
 	<artifactId>mavenInstaller</artifactId>
 	<packaging>jar</packaging>
-	<version>0.3.1</version>
+	<version>0.3.2</version>
 	<name>mavenInstaller</name>
 	<description>Detect SCM changed and build only changed modules</description>
 

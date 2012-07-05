@@ -56,6 +56,9 @@ public class MavenProcessRunner {
 	public void install(String mavenSettings,String pom) throws Exception {
 		
 		ProcessBuilder processBuilder = new ProcessBuilder();
+		//redirects the process's error stream to its output stream. Consequently, 
+		//the program can empty the single output stream without fear of blockage.
+		processBuilder = processBuilder.redirectErrorStream(true);
 		processBuilder.directory(new File(Globals.getProjectHome()));
 		System.out.println(processBuilder.directory().toString());	
 		List<String> command = new ArrayList<String>();
@@ -83,18 +86,11 @@ public class MavenProcessRunner {
 	private void printProcess(Process process) throws IOException {
 		BufferedReader results=new BufferedReader(new InputStreamReader(process.getInputStream()));  
         String s;  
-        boolean err=false;
         while((s=results.readLine())!=null) {
         	if(s.endsWith("BUILD SUCCESS")) {
         		buildSuccessed = true;
         	}
         	System.out.println(s);
-        }
-              
-        BufferedReader errors=new BufferedReader(new InputStreamReader(process.getErrorStream()));  
-        while((s=errors.readLine())!=null){  
-            System.err.println(s);  
-            err=true;  
         }
 	}
 	
