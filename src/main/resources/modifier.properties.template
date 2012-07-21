@@ -1,6 +1,7 @@
 project.home=/home/bmiao/projects/viper
 project.mavenSettings=/home/bmiao/projects/viper/conf/maven_settings.xml
 project.originPOM=/Alineo/Alineo/pom.xml
+project.modules.exclude=Alineo/Alineo/alineo/,Alineo/ServiceImpl/,Alineo/Security_Core/security-import/
 scm=Git
 
 svn.url = https://subversive.cims.nyu.edu/osp/javagit/trunk/

@@ -145,10 +145,6 @@ public class POMModifier {
 		return modulesThatNeedToBuild;
 	}
 
-	private boolean isSkiped(String module) {
-		return module.equals("alineo") || module.equals("../ServiceImpl");
-	}
-
 	/**
 	 * 从Alineo/Alineo目录中的POM中取出原本要build的项目
 	 * @return
@@ -159,15 +155,13 @@ public class POMModifier {
 		String canidateModules = "";
 		String moduleName;
 		for (Element moduleElement : modulesElement) {
-			if(!isSkiped(moduleElement.getText())) {
-				// 补全module路径
-				if(moduleElement.getText().startsWith("../")) {
-					moduleName = moduleElement.getText().replace("../", "Alineo/");
-				} else {
-					moduleName = "Alineo/Alineo/" + moduleElement.getText() ;
-				}
-				canidateModules += moduleName.replace("-", "\\-") + "/.*" + "|";
-			}					
+			// 补全module路径
+			if(moduleElement.getText().startsWith("../")) {
+				moduleName = moduleElement.getText().replace("../", "Alineo/");
+			} else {
+				moduleName = "Alineo/Alineo/" + moduleElement.getText() ;
+			}
+			canidateModules += moduleName.replace("-", "\\-") + "/.*" + "|";					
 		}	
 		
 		return canidateModules;

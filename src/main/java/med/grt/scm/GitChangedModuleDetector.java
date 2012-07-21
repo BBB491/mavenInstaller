@@ -52,7 +52,7 @@ public class GitChangedModuleDetector extends ChangedModuleDetector {
 			if(c.getFiles() != null) {
 				for(CommitFile commitFile: c.getFiles()) {
 					System.out.println(commitFile.getName());
-					changeFiles += commitFile.getName() + ";";
+					this.appendChangeFiles(changeFiles, commitFile.getName());
 				}	
 			}						    
 		}

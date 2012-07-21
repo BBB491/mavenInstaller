@@ -55,4 +55,8 @@ public class Globals {
 	public static boolean isWindows() {
 		return System.getProperty("os.name").contains("Windows");
 	}
+	
+	public static String getExcludeModules() {
+		return getProperty("project.modules.exclude"); 
+	}
 }
