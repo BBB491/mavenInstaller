@@ -4,7 +4,7 @@ project.originPOM=/Alineo/Alineo/pom.xml
 project.modules.exclude=Alineo/Alineo/alineo/,Alineo/ServiceImpl/,Alineo/Security_Core/security-import/
 scm=Git
 
-svn.url = https://subversive.cims.nyu.edu/osp/javagit/trunk/
-svn.user = anonymous
-svn.password = anonymous
+#svn.url = https://subversive.cims.nyu.edu/osp/javagit/trunk/
+#svn.user = anonymous
+#svn.password = anonymous
 
