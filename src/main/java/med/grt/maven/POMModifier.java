@@ -11,6 +11,7 @@ import med.grt.scm.ChangedModuleDetector;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
 
@@ -21,6 +22,7 @@ public class POMModifier {
 	 */
 	private String project_home;
 	private String originPOMFullPath;
+	Namespace ns;
 	private Document doc;
 	private List<Element> modulesElement;
 	private String lastFinishDateTimeString;
@@ -71,16 +73,15 @@ public class POMModifier {
 	 * @throws Exception
 	 */
 	public void init() throws Exception {
-		
 		project_home = Globals.getProjectHome();
 		
 		//　初始化jdom
 		originPOMFullPath = project_home + Globals.getProperty("project.originPOM");
+		ns =  Namespace.getNamespace("http://maven.apache.org/POM/4.0.0");  
 		SAXBuilder builder = new SAXBuilder();
 		doc = builder.build(originPOMFullPath);
-		Element project = doc.getRootElement();
-		
-		modulesElement = getModulesElement(project);
+		modulesElement = doc.getRootElement().getChild("modules",ns).getChildren();
+		modulesElement = (modulesElement == null?new ArrayList<Element>():modulesElement);
 	}
 	
 	/**
@@ -166,24 +167,4 @@ public class POMModifier {
 		
 		return canidateModules;
 	}
-
-	/**
-	 * 很奇怪，不清楚为什么不能直接去取modules标签,JDOM的Bug??
-	 * @param children
-	 * @return
-	 */
-	private List<Element> getModulesElement(Element project) {
-		List<Element> children = project.getChildren();
-		//Element a = project.getChild("modules");
-		List<Element> modulesElement = null;
-		for (Element element : children) {
-			if(element.getName().equals("modules")) {
-				modulesElement = element.getChildren();
-				break;
-			}
-		}
-		return (modulesElement == null?new ArrayList<Element>():modulesElement);
-	}
-
-	
 }
