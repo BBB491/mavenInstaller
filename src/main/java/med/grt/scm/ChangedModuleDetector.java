@@ -63,13 +63,15 @@ public abstract class ChangedModuleDetector {
 				firstIndex = changeFile.indexOf("Alineo/");
 				// TODO:解释一下为什么要这样做
 				if(changeFile.lastIndexOf("pom.xml") > 0) {
-					lastIndex = changeFile.indexOf("/pom.xml")+1;
+					lastIndex = changeFile.indexOf("/pom.xml");
 				} else {
 					lastIndex = changeFile.indexOf("/src")+1;
 				}
-				changeModuleName = changeFile.substring(firstIndex, lastIndex);
-				
-				if(!isSkiped(changeModuleName) && !changedModules.contains(changeModuleName)) changedModules.add(changeModuleName);
+				if(firstIndex > -1 && lastIndex > -1) {
+					changeModuleName = changeFile.substring(firstIndex, lastIndex);
+					
+					if(!isSkiped(changeModuleName) && !changedModules.contains(changeModuleName)) changedModules.add(changeModuleName);
+				}				
 			}		
 		} 
 		return changedModules;
