@@ -2,7 +2,9 @@ package med.grt.maven;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import med.grt.Globals;
@@ -53,7 +55,7 @@ public class POMModifier {
 			String canidateModulesPattern = this.getCanidateModulesPattern();
 			//info(canidateModulesPattern);
 			// 从改动过的文件中筛选出要重新build的项目
-			List<String> modulesThatNeedToBuild = this.filterOutModulesThatNeedToBeReinstall(changedModules,canidateModulesPattern);
+			Set<String> modulesThatNeedToBuild = this.filterOutModulesThatNeedToBeReinstall(changedModules,canidateModulesPattern);
 			info("============================================================");
 			info("modulesThatNeedToBuild:" + modulesThatNeedToBuild.toString());
 			// 在Alineo/Alineo目录下生成一个新的POM文件
@@ -91,7 +93,7 @@ public class POMModifier {
 	 * @return
 	 * @throws Exception
 	 */
-	private String rebuildPOM(List<String> modulesThatNeedToBuild,boolean buildAll) throws Exception {
+	private String rebuildPOM(Set<String> modulesThatNeedToBuild,boolean buildAll) throws Exception {
 		
 		if(!buildAll) {
 			modulesElement.clear();
@@ -132,10 +134,10 @@ public class POMModifier {
 	 * @param originBuildModules
 	 * @return
 	 */
-	private List<String> filterOutModulesThatNeedToBeReinstall(List<String> changedModules,
+	private Set<String> filterOutModulesThatNeedToBeReinstall(List<String> changedModules,
 			String canidateModulesPattern) {
 		
-		List<String> modulesThatNeedToBuild = new ArrayList<String>();
+		Set<String> modulesThatNeedToBuild = new HashSet<String>();
 		
 		for (String changedModule : changedModules) {
 			if(Pattern.matches(canidateModulesPattern, changedModule)) {
